@@ -1,7 +1,15 @@
+from flask import Flask, jsonify
 import requests
-print("=== DOLAR HOY EN PERU ===")
-r = requests.get("https://open.er-api.com/v6/latest/USD", timeout=10)
-precio = r.json()['rates']['PEN']
-print(f"1 Dólar = {precio} Soles")
-print(f"10 Dólares = {precio*10:.2f} soles")
-print(f"100 Dólares = {precio*100:.2f} soles")
+
+app = Flask(__name__)
+
+@app.route('/')
+def dolar():
+    try:
+        r = requests.get('https://api.frankfurter.app/latest?from=USD&to=PEN', timeout=10).json()
+        return jsonify({"compra": r['rates']['PEN'], "venta": r['rates']['PEN'], "fuente": "frankfurter"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)
